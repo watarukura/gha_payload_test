@@ -1,4 +1,5 @@
 ---
+name: github.event test
 on:
   push:
     tags:
@@ -32,13 +33,14 @@ jobs:
         with:
           ref: ${{ github.event.inputs.tag }}
       - name: Checkout
-        if: ${{ github.event.payload.ref }}
+        if: ${{ toJson(github.event.payload.ref) }}
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
-          ref: ${{ github.event.payload.ref }}
+          ref: ${{ toJson(github.event.payload.ref) }}
       - name: Get Ref
         id: get-ref
         run: |
+          set -xv
           echo ${{ github.event.payload }}
           ref=$(git rev-parse HEAD)
           echo "ref=$ref" >> "$GITHUB_OUTPUT"
