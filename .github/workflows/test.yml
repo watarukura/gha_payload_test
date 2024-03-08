@@ -1,0 +1,44 @@
+---
+on:
+  push:
+    tags:
+      - 'v[1-9][0-9]{13}'
+  workflow_dispatch:
+    inputs:
+      tag:
+        type: string
+        description: 'Input tag (e.g. v1.0.1)'
+        required: true
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: read
+defaults:
+  run:
+    shell: bash
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  get-ref:
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    outputs:
+      ref: ${{ steps.get-ref.outputs.ref }}
+    steps:
+      - name: Checkout
+        if: ${{ github.event.inputs.tag }}
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          ref: ${{ github.event.inputs.tag }}
+      - name: Checkout
+        if: ${{ github.event.payload.ref }}
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          ref: ${{ github.event.payload.ref }}
+      - name: Get Ref
+        id: get-ref
+        run: |
+          echo ${{ github.event.payload }}
+          ref=$(git rev-parse HEAD)
+          echo "ref=$ref" >> "$GITHUB_OUTPUT"
