@@ -36,6 +36,10 @@ jobs:
         id: get-ref
         run: |
           set -xv
-          echo ${{ toJson(github.event.after) }}
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            git checkout ${{ toJson(github.event.after) }}
+          else
+            git checkout ${{ github.event.inputs.tag }}
+          fi
           ref=$(git rev-parse HEAD)
           echo "ref=$ref" >> "$GITHUB_OUTPUT"
