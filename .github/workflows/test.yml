@@ -37,7 +37,5 @@ jobs:
         run: |
           set -xv
           echo ${{ toJson(github.event.after) }}
-          git tag
-          git log | head
           ref=$(git rev-parse HEAD)
           echo "ref=$ref" >> "$GITHUB_OUTPUT"
