@@ -33,7 +33,7 @@ jobs:
         with:
           ref: ${{ github.event.inputs.tag }}
       - name: Checkout
-        if: ${{ toJson(github.event.payload.ref) }}
+        if: ${{ ! github.event.inputs.tag }}
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           ref: ${{ toJson(github.event.payload.ref) }}
