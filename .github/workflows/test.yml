@@ -36,7 +36,7 @@ jobs:
         id: get-ref
         run: |
           set -xv
-          echo ${{ github.event.payload }}
+          echo ${{ toJson(github.event) }}
           git tag
           git log | head
           ref=$(git rev-parse HEAD)
