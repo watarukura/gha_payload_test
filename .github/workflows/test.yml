@@ -28,12 +28,6 @@ jobs:
       ref: ${{ steps.get-ref.outputs.ref }}
     steps:
       - name: Checkout
-        if: ${{ github.event.inputs.tag }}
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-        with:
-          ref: ${{ github.event.inputs.tag }}
-      - name: Checkout
-        if: ${{ ! github.event.inputs.tag }}
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           fetch-depth: 0
@@ -44,5 +38,6 @@ jobs:
           set -xv
           echo ${{ github.event.payload }}
           git tag
+          git log | head
           ref=$(git rev-parse HEAD)
           echo "ref=$ref" >> "$GITHUB_OUTPUT"
