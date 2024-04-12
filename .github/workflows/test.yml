@@ -1,18 +1,11 @@
 ---
 name: github.event test
 on:
-  push:
-    tags:
-      - 'v[0-9]*'
   workflow_dispatch:
-    inputs:
-      tag:
-        type: string
-        description: 'Input tag (e.g. v1.0.1)'
-        required: true
+
 permissions:
   id-token: write
-  contents: write
+  contents: read
   pull-requests: read
 defaults:
   run:
@@ -24,22 +17,14 @@ jobs:
   get-ref:
     runs-on: ubuntu-latest
     timeout-minutes: 1
-    outputs:
-      ref: ${{ steps.get-ref.outputs.ref }}
     steps:
       - name: Checkout
+        timeout-minutes: 1
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-        with:
-          fetch-depth: 0
-          fetch-tags: true
       - name: Get Ref
         id: get-ref
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -xv
-          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
-            git checkout ${{ toJson(github.event.after) }}
-          else
-            git checkout ${{ github.event.inputs.tag }}
-          fi
-          ref=$(git rev-parse HEAD)
-          echo "ref=$ref" >> "$GITHUB_OUTPUT"
+          gh pr list --state open --json headRefName
